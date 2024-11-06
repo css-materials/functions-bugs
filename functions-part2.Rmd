@@ -1,0 +1,68 @@
+---
+title: "Functions (cont.): Questions 5, 6, 7"
+output: html_document
+date: "2024-11-06"
+---
+
+NOTE: The following three questions are identical to those presented in the in-class materials from the previous lecture. However, the solutions provided in this folder have been updated to include more detailed explanations.
+
+
+## QUESTION 5. Write a function that calculates the mean of a numeric vector.
+Do not use any R built-in functions, e.g., do not use length(), sum(), etc.
+Then add a check to evaluate if the input vector is numeric
+If not, use stop() to stop the code and write a message
+
+```{r}
+# define a numeric vector
+v <- c(1:10)
+
+# our goal
+mean(v)
+```
+
+```{r}
+
+```
+
+
+## QUESTION 6. Add documentation to the function you wrote in question 4 or in 5.
+
+```{r}
+mean_vect <- function(vector) {
+  
+  if (!is.numeric(vector)) {
+    stop("Input vector must be numeric!")
+  }
+  
+  sum_elements <- 0
+  count_elements <- 0
+  
+  for (i in seq_along(vector)) {
+    sum_elements <- sum_elements + vector[i]
+    count_elements <- count_elements + 1
+  }
+  return(sum_elements / count_elements)
+}
+```
+
+
+## QUESTION 7. Given this plot, rewrite it as a function. Your function should take three arguments like that `(df, var, binwidth = NULL)`
+
+```{r, message = FALSE}
+# import library and data
+library(tidyverse)
+data(diamonds)
+```
+
+```{r}
+# code to re-write 
+diamonds %>% 
+  ggplot(aes(x = carat)) + 
+  geom_histogram(binwidth = 0.1)
+```
+
+```{r}
+
+```
+
+

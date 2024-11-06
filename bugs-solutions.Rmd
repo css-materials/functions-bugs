@@ -1,0 +1,136 @@
+---
+title: "Debugging code: in-class exercises - SOLUTIONS"
+output: html_document
+---
+
+GOAL: Each code snippet in this document contains errors and does not currently produce the desired output. Your task is to identify and fix these errors to ensure the code works correctly.
+
+
+## Load libraries and data
+
+Data come from the `babynames` package (http://hadley.github.io/babynames/). This package includes three datasets provided by the US government: `babynames`,  `applicants` ,  `lifetables`.
+
+If you are working on your local R Studio, you might need to install the libraries before loading them. If you are working on Workbench, simply run the code below to load the libraries, no installation required:
+```{r}
+library(tidyverse)
+library(babynames)
+```
+
+Check data:
+```{r}
+glimpse(babynames)
+str(babynames)
+```
+
+```{r}
+glimpse(applicants)
+```
+
+
+## QUESTION 1. The code below should calculate the count of distinct names for each year in the `babynames` data, and plot them with a line graph. The code contains TWO SYNTAX ERRORS. Find and fix them.
+
+```{r}
+babynames %>%
+  group_by(year) %>%
+  summarize(name = n_distinct(name)) +
+  ggplot(mapping = (aes(x = name, x = year))) +
+  geom_line() + 
+  labs(
+      title = "Disinct names over time",
+      x = "Year",
+      y = "Number of unique names")
+```
+
+```{r}
+# solution correct code
+babynames %>%
+  group_by(year) %>%
+  summarize(distinct_names = n_distinct(name)) %>%
+  ggplot(mapping = (aes(x = year, y = distinct_names))) + 
+  geom_line() + 
+  labs(
+      title = "Disinct names over time",
+      x = "Year",
+      y = "Number of unique names")
+```
+
+
+## QUESTION 2. The code below uses the  `applicants` data to generate a line plot that displays the total US births by sex and year. The code contains TWO CONCEPTUAL ERRORS (e.g., incorrect function used or incorect argument passed, etc.). Find and fix them.
+
+```{r}
+applicants %>%
+  select(
+    sex = if_else(sex == "F", "Female", "Male"),
+  ) %>%
+  ggplot(mapping = aes(x = year, y = n_all, color = "sex")) + 
+  geom_line() +
+  labs(
+    title = "Total US births by sex and year",
+    x = "Year",
+    y = "Number of births",
+    caption = "Source: Social Security Administration"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+# solution correct code
+applicants %>%
+  mutate(
+    sex = if_else(sex == "F", "Female", "Male"),
+  ) %>%
+  ggplot(mapping = aes(x = year, y = n_all, color = sex)) +
+  geom_line() +
+  labs(
+    title = "Total US births by sex and year",
+    x = "Year",
+    y = "Number of births",
+    caption = "Source: Social Security Administration"
+  ) +
+  theme_minimal()
+```
+
+
+
+## QUESTION 3. The code below defines a function to show trends over time for a specific name using the `babynames` dataset. The code contains TWO CONCEPTUAL ERRORS. Find and fix them. Notice `paste()` allows to print by concatenating stringsa and does not contain errors here.
+
+```{r}
+name_trend <- function(df, person_name) {
+  data %>% 
+    filter(name == {{ person_name }} ) %>%  
+    ggplot(mapping = aes(x = year, y = n, color = sex)) + 
+    geom_line() +
+    labs(
+      title = paste("Name:", person_name),
+      x = "Year",
+      y = "Number of births"
+    ) +
+    theme_minimal()
+}
+
+# call the function, try to call it with your name!
+name_trend(babynames, "Sabrina")
+```
+
+```{r}
+# solution correct code
+name_trend <- function(df, person_name) {
+  df %>%
+    filter(name == person_name) %>%
+    ggplot(mapping = aes(x = year, y = n, color = sex)) +
+    geom_line() +
+    labs(
+      title = paste("Name:", person_name),
+      x = "Year",
+      y = "Number of births"
+    ) +
+    theme_minimal()
+}
+
+# Call the function with the name "Sabrina"
+name_trend(babynames, "Sabrina")
+```
+
+Explanation of tidy eval error:
+` {{}}` is necessary when you are referring to columns by names stored in variables, not to their actual values. Here we are passing the actual value (the name "Sabrina") directly to the filter function, we are not passing a variable that contains a column name. Therefore, ` {{}}` is not necessary.
+
